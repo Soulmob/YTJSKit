@@ -16,10 +16,11 @@ public class YTJS_Music: NSObject {
     public var duration: String = ""
     public var url_web: String = ""
     
-    init?(player json: JSON) {
+    convenience init?(player json: JSON, videoURL: String) {
         guard let videoId = json["id"].string else {
             return nil
         }
+        self.init()
         self.id = videoId
         
         if let thumbnail = json["thumbnails"].arrayValue.last {
@@ -29,10 +30,26 @@ public class YTJS_Music: NSObject {
         self.subtitle = json["uploader"].stringValue
         let duration = Float(json["duration"].stringValue) ?? 0
         self.duration = YTJS_Duration.format(duration)
-        var webURL = json["webURL"].stringValue
-        if webURL.isEmpty {
-            webURL = "https://www.youtube.com/watch?v=\(videoId)"
+        self.url_web = videoURL
+    }
+    
+    convenience init?(playerList json: JSON, videoURL: String) {
+        guard let _videoURL = URL(string: videoURL), let videoId = json["videoId"].string else {
+            return nil
         }
-        self.url_web = webURL
+        self.init()
+        self.id = videoId
+        
+        if let thumbnail = json["thumbnails"].arrayValue.last {
+            self.img_url = thumbnail["url"].stringValue
+        }
+        self.title = json["title"].stringValue
+        self.subtitle = json["author"].stringValue
+        self.duration = json["lengthText"].stringValue
+        if _videoURL.host == "music.youtube.com" {
+            self.url_web = "https://music.youtube.com/watch?v=\(videoId)"
+        } else {
+            self.url_web = "https://www.youtube.com/watch?v=\(videoId)"
+        }
     }
 }

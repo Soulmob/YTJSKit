@@ -36,16 +36,42 @@ public class YTJS_URLFormat: NSObject {
 }
 
 class YTJS_ExtractorURL: NSObject {
-    static func getUrl(with videoURL: String, completion: @escaping YTJS_ValueBlock<YTJS_ExtractorURL_Result?>) {
-        YTJS_Extractor.shared.queryVideo(with: videoURL) { json in
-            let result = parseJson(with: json)
+    static func getUrl(with videoURL: String, needRelated: Bool, completion: @escaping YTJS_ValueBlock<YTJS_ExtractorURL_Result?>) {
+        var result: YTJS_ExtractorURL_Result?
+        var relatedModels: [YTJS_Music] = []
+
+        let group = DispatchGroup()
+        group.enter()
+        YTJS_Extractor.shared.queryVideo(with: videoURL, event: .Extract) { json in
+            result = parseJson(with: json, videoURL: videoURL)
+            group.leave()
+        }
+        if needRelated {
+            group.enter()
+            YTJS_Extractor.shared.queryVideo(with: videoURL, event: .Related) { json in
+                relatedModels = json["data"].arrayValue.compactMap { YTJS_Music(playerList: $0, videoURL: videoURL) }
+                group.leave()
+            }
+        }
+        group.notify(queue: .main) {
+            if let result = result, result.playlist.count == 0 {
+                result.playlist = relatedModels
+            }
             completion(result)
         }
     }
 
-    private static func parseJson(with json: JSON) -> YTJS_ExtractorURL_Result? {
+    private static func parseJson(with json: JSON, videoURL: String) -> YTJS_ExtractorURL_Result? {
         let music = json["data"]["music"]
         let formatsJson = music["formats"].arrayValue
+
+        let recommendInfo = music["recommendInfo"].arrayValue
+        let library = json["data"]["library"]["contents"].arrayValue
+        // 播放列表
+        let musics_library = library.compactMap { YTJS_Music(playerList: $0, videoURL: videoURL) }
+        // 推荐列表
+        let musics_recommend = recommendInfo.compactMap { YTJS_Music(playerList: $0, videoURL: videoURL) }
+
         // 格式
         var format_available: YTJS_URLFormat?
         let _formats = formatsJson.compactMap { YTJS_URLFormat(json: $0) }
@@ -57,9 +83,13 @@ class YTJS_ExtractorURL: NSObject {
 
         if let format = format_available,
            let url = URL(string: format.url),
-           let nowPlay = YTJS_Music(player: music)
+           let nowPlay = YTJS_Music(player: music, videoURL: videoURL)
         {
-            let result = YTJS_ExtractorURL_Result(playURL: url, music: nowPlay, format: format)
+            var recommends = musics_library
+            if recommends.count == 0 {
+                recommends = musics_recommend
+            }
+            let result = YTJS_ExtractorURL_Result(playURL: url, music: nowPlay, format: format, playlist: recommends)
             return result
         } else {
             return nil
@@ -67,8 +97,16 @@ class YTJS_ExtractorURL: NSObject {
     }
 }
 
-public struct YTJS_ExtractorURL_Result {
+public class YTJS_ExtractorURL_Result: NSObject {
     public var playURL: URL
     public var music: YTJS_Music
     public var format: YTJS_URLFormat
+    public var playlist: [YTJS_Music] = []
+
+    init(playURL: URL, music: YTJS_Music, format: YTJS_URLFormat, playlist: [YTJS_Music] = []) {
+        self.playURL = playURL
+        self.music = music
+        self.format = format
+        self.playlist = playlist
+    }
 }

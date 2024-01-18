@@ -65,9 +65,9 @@ class YTJS_Extractor: NSObject {
         }
     }
     
-    func queryVideo(with videoUrl: String, completionBlock: @escaping YTJS_ValueBlock<JSON>) {
+    func queryVideo(with videoUrl: String, event: JSBridgeEventName, completionBlock: @escaping YTJS_ValueBlock<JSON>) {
         requestId += 1
-        let model = YTJS_Extractor_Model(uid: requestId, event: .Extract, completionBlock: completionBlock)
+        let model = YTJS_Extractor_Model(uid: requestId, event: event, completionBlock: completionBlock)
         extractorModels.append(model)
         
         let dict: [String: Any] = ["data": ["url": videoUrl],
