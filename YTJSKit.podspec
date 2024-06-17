@@ -1,7 +1,7 @@
 Pod::Spec.new do |s|
 
 s.name                = "YTJSKit"
-s.version             = "0.0.2"
+s.version             = "0.0.3"
 s.summary             = "YouTube JS"
 s.homepage            = "https://github.com/Soulmob/YTJSKit"
 s.author              = { "mengqingzheng" => "mengqingzheng@munimob.com" }
@@ -16,7 +16,7 @@ s.public_header_files = ['Source/*.h']
 
 s.swift_versions        = ['5.0', '5.1', '5.2']
 
-s.dependency 'Alamofire',                   '~> 5.8.1'
-s.dependency 'SwiftyJSON',                  '~> 5.0.1'
+s.dependency 'Alamofire',                   '~> 5.9.1'
+s.dependency 'SwiftyJSON',                  '~> 5.0.2'
 
 end
