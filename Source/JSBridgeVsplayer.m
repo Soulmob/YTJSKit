@@ -6,7 +6,7 @@
 //
 
 #import "JSBridgeVsplayer.h"
-@import YTJSKitSwift
+#import <YTJSKit/YTJSKit-Swift.h>
 
 @implementation JSBridgeVsplayer
 
