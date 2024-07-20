@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="22155" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="BYZ-38-t0r">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="32700.99.1234" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="BYZ-38-t0r">
     <device id="retina6_12" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22131"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22684"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -25,12 +25,23 @@
                                     <action selector="next111:" destination="BYZ-38-t0r" eventType="touchUpInside" id="cpy-W2-Idi"/>
                                 </connections>
                             </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="YU0-Dh-REe">
+                                <rect key="frame" x="142" y="473.66666666666669" width="109.33333333333331" height="35"/>
+                                <state key="normal" title="Button"/>
+                                <buttonConfiguration key="configuration" style="plain" title="YouTubeKit"/>
+                                <connections>
+                                    <action selector="action_YouTubeKit:" destination="BYZ-38-t0r" eventType="touchUpInside" id="0MG-FN-ZcP"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
+                            <constraint firstItem="l1q-PU-PDk" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="PQn-AS-DNU"/>
                             <constraint firstItem="l1q-PU-PDk" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="Zx9-ec-fok"/>
+                            <constraint firstItem="YU0-Dh-REe" firstAttribute="top" secondItem="l1q-PU-PDk" secondAttribute="bottom" constant="30" id="d0d-MV-Vlw"/>
                             <constraint firstItem="l1q-PU-PDk" firstAttribute="centerY" secondItem="8bC-Xf-vdC" secondAttribute="centerY" id="jgj-v9-rdb"/>
+                            <constraint firstItem="YU0-Dh-REe" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="puS-5f-qoY"/>
                         </constraints>
                     </view>
                 </viewController>

@@ -2061,6 +2061,14 @@
             }
         }
     }
+    function checkDataWithVideoId(data, videoID) {
+        if (!data) return false
+          try {
+            var videoData = JSON.parse(data)
+            return videoData.videoDetails.videoId === videoID
+          } catch(e) {}
+          return false
+    }
     var core = new Music,
         getVideoFromPlayList = function() {
             var e = _asyncToGenerator(function*(e) {
@@ -2151,12 +2159,12 @@
                 "Alt-Used": "www.youtube.com"
             }, this.homepageHTMLRes = "", this.INNERTUBE_CLIENTS = {
                 android: {
-                    INNERTUBE_API_KEY: "AIzaSyAO_FJ2SlqU8Q4STEHLGCilw_Y9_11qcW8",
+                    INNERTUBE_API_KEY: "AIzaSyA8eiZmM1FaDVjRy-df2KTyQ_vz_yYM39w",
                     INNERTUBE_HOST: "www.youtube.com",
                     INNERTUBE_CONTEXT: {
                         client: {
                             clientName: "ANDROID",
-                            clientVersion: "16.20",
+                            clientVersion: "19.09.37",
                             androidSdkVersion: "31",
                             hl: "en"
                         }
@@ -2170,8 +2178,45 @@
                     INNERTUBE_CONTEXT: {
                         client: {
                             clientName: "ANDROID_MUSIC",
-                            clientVersion: "4.32",
+                            clientVersion: "6.42.52",
                             hl: "en"
+                        }
+                    },
+                    INNERTUBE_CONTEXT_CLIENT_NAME: 21,
+                    REQUIRE_JS_PLAYER: !1
+                },
+                embedded_player: {
+                    INNERTUBE_API_KEY: "AIzaSyAO_FJ2SlqU8Q4STEHLGCilw_Y9_11qcW8",
+                    INNERTUBE_HOST: "www.youtube.com",
+                    INNERTUBE_CONTEXT: {
+                        client: {
+                            clientName: "ANDROID_EMBEDDED_PLAYER",
+                            clientVersion: "19.09.37",
+                            androidSdkVersion: 30,
+                            userAgent: "com.google.android.youtube/19.09.37 (Linux; U; Android 11) gzip",
+                            hl: "en",
+                            timeZone: "UTC",
+                            utcOffsetMinutes: 0
+                        },
+                        thirdParty: {
+                            "embedUrl": "https://www.youtube.com/"
+                        }
+                    },
+                    INNERTUBE_CONTEXT_CLIENT_NAME: 21,
+                    REQUIRE_JS_PLAYER: !1
+                },
+                ios: {
+                    INNERTUBE_API_KEY: "AIzaSyB-63vPrdThhKuerbB2N_l7Kwwcxj6yUAc",
+                    INNERTUBE_HOST: "www.youtube.com",
+                    INNERTUBE_CONTEXT: {
+                        client: {
+                            clientName: "IOS",
+                            clientVersion: "19.09.3",
+                            deviceModel: "iPhone14,3",
+                            userAgent: "com.google.ios.youtube/19.09.3 (iPhone14,3; U; CPU iOS 15_6 like Mac OS X)",
+                            hl: "en",
+                            timeZone: "UTC",
+                            utcOffsetMinutes: 0
                         }
                     },
                     INNERTUBE_CONTEXT_CLIENT_NAME: 21,
@@ -2281,7 +2326,8 @@
             var n = "en";
             r && (r.uLangu || r.lang) && (n = (r.uLangu || r.lang).split("-")[0] || n);
             var o = this.INNERTUBE_CLIENTS[t].INNERTUBE_CONTEXT;
-            return o.client.hl = n, {
+            o.client.hl = n;
+            var body = {
                 context: Object.assign({}, o),
                 videoId: e,
                 playbackContext: {
@@ -2290,9 +2336,10 @@
                     }
                 },
                 contentCheckOk: !0,
-                racyCheckOk: !0,
-                params: "CgIQBg"
-            }
+                racyCheckOk: !0
+            };
+            if ('android' === t) body['params'] = "CgIIAQ=="
+            return body
         }
         getPOSTBody(e) {
             var t, {
@@ -2381,7 +2428,8 @@
             var n = this;
             return _asyncToGenerator(function*() {
                 var o = "",
-                    a = /music.youtube.com/.test(e) ? "android_music" : "android",
+                    types = /music.youtube.com/.test(e) ? ['android_music', 'android', 'embedded_player'] : ['android', 'embedded_player'],
+                    a = types[0],
                     i = n.INNERTUBE_CLIENTS[a].INNERTUBE_HOST,
                     s = n.INNERTUBE_CLIENTS[a].INNERTUBE_API_KEY,
                     l = {
@@ -2410,7 +2458,36 @@
                     }),
                     body: n.getAndroidPOSTBody(o, a, r)
                 })]);
-                if (!c[0].success || !c[1].success) throw new NetWorkError(c[0].errMsg || "");
+                if (!c[0].success) throw new NetWorkError(c[0].errMsg || "");
+                if (!c[1].success || !checkDataWithVideoId(c[1].result, o)) {
+                    if (types.length > 1) {
+                        for (let index = 1; index < types.length; index++) {
+                            a = types[index]
+                            i = n.INNERTUBE_CLIENTS[a].INNERTUBE_HOST
+                            s = n.INNERTUBE_CLIENTS[a].INNERTUBE_API_KEY
+                            var extractorUa = n.INNERTUBE_CLIENTS[a].INNERTUBE_CONTEXT.client.userAgent
+                            if (!extractorUa) {
+                                extractorUa = ua
+                            }
+                            var em = yield Promise.all([get$1("https://" + i + "/youtubei/v1/player?key=" + s, {
+                                method: "POST",
+                                extraHeaders: Object.assign({}, l, {
+                                    Origin: "https://" + i,
+                                    "content-type": "application/json",
+                                    "User-Agent": extractorUa
+                                }),
+                                body: n.getAndroidPOSTBody(o, a, r)
+                            })]);
+                            c[1] = em[0]
+                            if(c[1].success && checkDataWithVideoId(c[1].result, o)){
+                                break;
+                            }
+                        }
+                    }
+                }
+
+                if(!c[1].success)  throw new NetWorkError(c[0].errMsg || "");
+
                 var u = c.map(e => {
                         var t = {};
                         try {
@@ -2931,7 +3008,6 @@
                     var vv = i.result.match(/google\.sbox\.p50\(([^\)]+)\)/);
                     try {
                         var cc = JSON.parse(vv[1])[1].map(i => i[0]);
-                        console.log("cc", cc)
                     } catch (error) {}
                 } else {
                     return

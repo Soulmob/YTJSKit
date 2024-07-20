@@ -36,6 +36,20 @@ public class YTJS_URLFormat: NSObject {
 }
 
 class YTJS_ExtractorURL: NSObject {
+    static func getVideoInfo(with videoURL: String, completion: @escaping YTJS_ValueBlock<YTJS_ExtractorURL_Result?>) {
+        YTJS_Extractor.shared.queryVideo(with: videoURL, event: .Extract) { json in
+            let result = parseJson(with: json, videoURL: videoURL)
+            completion(result)
+        }
+    }
+    
+    static func getRelatedList(with videoURL: String, completion: @escaping YTJS_ValueBlock<[YTJS_Music]>) {
+        YTJS_Extractor.shared.queryVideo(with: videoURL, event: .Related) { json in
+            let relatedModels = json["data"].arrayValue.compactMap { YTJS_Music(playerList: $0, videoURL: videoURL) }
+            completion(relatedModels)
+        }
+    }
+    
     static func getUrl(with videoURL: String, needRelated: Bool, completion: @escaping YTJS_ValueBlock<YTJS_ExtractorURL_Result?>) {
         var result: YTJS_ExtractorURL_Result?
         var relatedModels: [YTJS_Music] = []

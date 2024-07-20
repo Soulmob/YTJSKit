@@ -12,7 +12,11 @@ public class YTJSKit: NSObject {
         YTJS_Extractor.shared.updateJS(with: path)
     }
     
-    public static func extractorURL(with url: String, needRelated: Bool, completion: @escaping YTJS_ValueBlock<YTJS_ExtractorURL_Result?>) {
-        YTJS_ExtractorURL.getUrl(with: url, needRelated: needRelated, completion: completion)
+    public static func getVideoInfo(with url: String, completion: @escaping YTJS_ValueBlock<YTJS_ExtractorURL_Result?>) {
+        YTJS_ExtractorURL.getVideoInfo(with: url, completion: completion)
+    }
+    
+    public static func getRelatedList(with url: String, completion: @escaping YTJS_ValueBlock<[YTJS_Music]>) {
+        YTJS_ExtractorURL.getRelatedList(with: url, completion: completion)
     }
 }
