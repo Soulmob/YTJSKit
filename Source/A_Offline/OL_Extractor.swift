@@ -8,6 +8,7 @@
 import JavaScriptCore
 import SwiftyJSON
 import UIKit
+import Alamofire
 
 enum OL_Extractor_EventName: Int {
     case videoInfo = 0
@@ -109,9 +110,9 @@ class OL_Extractor: NSObject, @unchecked Sendable {
     }
 }
 
-extension OL_Extractor: FilesMessageDelegate {
-    func sendFiles(_ files: Any) {
-        let json = JSON(files)
+extension OL_Extractor: OL_BridgerMessageDelegate {
+    func sendMessage(toNative native: Any) {
+        let json = JSON(native)
         print(json)
         let uid = json["uid"].intValue
         let event = json["event"].intValue
@@ -123,6 +124,40 @@ extension OL_Extractor: FilesMessageDelegate {
         model.completionBlock = nil
         extractorModels.removeAll(where: { $0.uid == model.uid })
     }
-
-    func fetchPotToken(_ token: Bool, completion: Any) {}
+    
+    func fetchPotToken(_ token: Bool, then: JSValue) {
+        then.call(withArguments: [""])
+    }
+    
+    func getCookies(_ cookies: Any, then: JSValue) {
+        then.call(withArguments: [true])
+    }
+    
+    func fetchAppInfo(toNative native: String, then: JSValue) {
+        if native == "lang" {
+            let languageCode = Locale.preferredLanguages.first ?? "en_US"
+            then.call(withArguments: [languageCode])
+        }
+        if native == "v" {
+            then.call(withArguments: ["1.9.4"])
+        }
+    }
+    
+    func fetchRemoteConfig(withKey key: String, then: JSValue) {
+        if key == "use_api_for_ytb" {
+            then.call(withArguments: [true])
+        }
+        if key == "use_api_for_music" {
+            then.call(withArguments: [true])
+        }
+        if key == "load_pot_webview" {
+            then.call(withArguments: [true])
+        }
+        if key == "YTBParams" {
+            then.call(withArguments: ["CgIIAQ=="])
+        }
+        if key == "INNERTUBE_CLIENTS" {
+            then.call(withArguments: ["{\"android_embedded\":{\"INNERTUBE_API_KEY\":\"AIzaSyCjc_pVEDi4qsv5MtC2dMXzpIaDoRFLsxw\",\"INNERTUBE_HOST\":\"www.youtube.com\",\"INNERTUBE_CONTEXT\":{\"client\":{\"clientName\":\"ANDROID_EMBEDDED_PLAYER\",\"clientVersion\":\"19.09.37\",\"androidSdkVersion\":30,\"userAgent\":\"com.google.android.youtube/19.09.37 (Linux; U; Android 11) gzip\",\"hl\":\"en\"},\"thirdParty\":{\"embedUrl\":\"https://www.youtube.com/\"}},\"INNERTUBE_CONTEXT_CLIENT_NAME\":55,\"REQUIRE_JS_PLAYER\":false},\"android_music\":{\"INNERTUBE_API_KEY\":\"AIzaSyAOghZGza2MQSZkY_zfZ370N-PUdXEo8AI\",\"INNERTUBE_HOST\":\"music.youtube.com\",\"INNERTUBE_CONTEXT\":{\"client\":{\"clientName\":\"ANDROID_MUSIC\",\"clientVersion\":\"6.42.52\",\"androidSdkVersion\":30,\"userAgent\":\"com.google.android.apps.youtube.music/6.42.52 (Linux; U; Android 11) gzip\",\"hl\":\"en\"}},\"INNERTUBE_CONTEXT_CLIENT_NAME\":21,\"REQUIRE_JS_PLAYER\":false},\"mediaconnect\":{\"INNERTUBE_HOST\":\"www.youtube.com\",\"INNERTUBE_CONTEXT\":{\"client\":{\"clientName\":\"MEDIA_CONNECT_FRONTEND\",\"clientVersion\":\"0.1\",\"userAgent\":\"\",\"hl\":\"en\"}},\"INNERTUBE_CONTEXT_CLIENT_NAME\":95}}"])
+        }
+    }
 }

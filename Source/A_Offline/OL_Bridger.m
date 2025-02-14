@@ -21,34 +21,35 @@
         [then callWithArguments:@[@(YES)]];
     }
     if ([key isEqualToString:@"YTBParams"]) {
-        [then callWithArguments:@[@"CgIIAQ=="]];
+        id value = [YTJSConfig shared].offline.YTBParams;
+        [then callWithArguments:@[value]];
     }
     if ([key isEqualToString:@"INNERTUBE_CLIENTS"]) {
-        NSString *clients = @"{\"android_embedded\":{\"INNERTUBE_API_KEY\":\"AIzaSyCjc_pVEDi4qsv5MtC2dMXzpIaDoRFLsxw\",\"INNERTUBE_HOST\":\"www.youtube.com\",\"INNERTUBE_CONTEXT\":{\"client\":{\"clientName\":\"ANDROID_EMBEDDED_PLAYER\",\"clientVersion\":\"19.09.37\",\"androidSdkVersion\":30,\"userAgent\":\"com.google.android.youtube/19.09.37 (Linux; U; Android 11) gzip\",\"hl\":\"en\"},\"thirdParty\":{\"embedUrl\":\"https://www.youtube.com/\"}},\"INNERTUBE_CONTEXT_CLIENT_NAME\":55,\"REQUIRE_JS_PLAYER\":false},\"android_music\":{\"INNERTUBE_API_KEY\":\"AIzaSyAOghZGza2MQSZkY_zfZ370N-PUdXEo8AI\",\"INNERTUBE_HOST\":\"music.youtube.com\",\"INNERTUBE_CONTEXT\":{\"client\":{\"clientName\":\"ANDROID_MUSIC\",\"clientVersion\":\"6.42.52\",\"androidSdkVersion\":30,\"userAgent\":\"com.google.android.apps.youtube.music/6.42.52 (Linux; U; Android 11) gzip\",\"hl\":\"en\"}},\"INNERTUBE_CONTEXT_CLIENT_NAME\":21,\"REQUIRE_JS_PLAYER\":false},\"mediaconnect\":{\"INNERTUBE_HOST\":\"www.youtube.com\",\"INNERTUBE_CONTEXT\":{\"client\":{\"clientName\":\"MEDIA_CONNECT_FRONTEND\",\"clientVersion\":\"0.1\",\"userAgent\":\"\",\"hl\":\"en\"}},\"INNERTUBE_CONTEXT_CLIENT_NAME\":95}}";
-        [then callWithArguments:@[clients]];
+        id value = [YTJSConfig shared].offline.INNERTUBE_CLIENTS;
+        [then callWithArguments:@[value]];
     }
-    NSLog(@"cccc ---- 000hook -----fetchRemoteConfigWithKey -  %@, %@", key, then.toString);
+//    NSLog(@"cccc ---- 000hook -----fetchRemoteConfigWithKey -  %@, %@", key, then.toString);
 }
 
 - (void)sendMessageToNative:(id)native {
     if (_delegate) {
-        [_delegate sendFiles:native];
+        [_delegate sendMessageToNative:native];
     }
 }
 
 - (void)fetchPotToken:(BOOL)token then:(JSValue *)then {
-    NSLog(@"cccc ---- 000hook -----fetchPotToken -  %d, %@", token, then.toString);
-    NSString *to = @"MnRZaB_-CH35zVlQ2P4-0gONbRtp33YfRrfOpRAD6gePFADD_RlveDkMsfkeLptAV-q-8OIzeV08wbKummdN3u7743meUDLPiPdl1eaLMcF49nqK-Bpq-mNCsr1AGZPqLlt4HSFIa7RZjRUSKepfgirRzsidUA==";
+//    NSLog(@"cccc ---- 000hook -----fetchPotToken -  %d, %@", token, then.toString);
+//    NSString *to = @"MnRZaB_-CH35zVlQ2P4-0gONbRtp33YfRrfOpRAD6gePFADD_RlveDkMsfkeLptAV-q-8OIzeV08wbKummdN3u7743meUDLPiPdl1eaLMcF49nqK-Bpq-mNCsr1AGZPqLlt4HSFIa7RZjRUSKepfgirRzsidUA==";
     [then callWithArguments:@[@""]];
 }
 
 - (void)getCookies:(id)cookies then:(JSValue *)then {
-    NSLog(@"cccc ---- 000hook -----getCookies -  %d, %@", cookies, then.toString);
+//    NSLog(@"cccc ---- 000hook -----getCookies -  %d, %@", cookies, then.toString);
     [then callWithArguments:@[@(YES)]];
 }
 
 - (void)fetchAppInfoToNative:(NSString *)native then:(JSValue *)then {
-    NSLog(@"cccc ---- 000hook -----fetchAppInfoToNative -  %@, %@", native, then.toString);
+//    NSLog(@"cccc ---- 000hook -----fetchAppInfoToNative -  %@, %@", native, then.toString);
     if ([native isEqualToString:@"lang"]) {
         NSArray *preferredLanguages = [NSLocale preferredLanguages];
         NSString *languageCode = preferredLanguages.firstObject;
@@ -56,13 +57,13 @@
     }
     
     if ([native isEqualToString:@"v"]) {
-        [then callWithArguments:@[@"1.9.4"]];
+        id value = [YTJSConfig shared].offline.appVersion;
+        [then callWithArguments:@[value]];
     }
 }
 
 - (void)sendRequestToNative:(NSString *)native options:(NSDictionary *)options then:(JSValue *)then {
-    NSLog(@"cccc ---- 000hook -----sendRequestToNative -  %@, %@", native, options);
-    
+//    NSLog(@"cccc ---- 000hook -----sendRequestToNative -  %@, %@", native, options);
     NSString *method = options[@"method"];
     if (method == nil) {
         method = @"GET";

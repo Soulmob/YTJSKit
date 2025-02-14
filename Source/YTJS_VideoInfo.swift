@@ -56,23 +56,15 @@ class YTJS_VideoInfo: NSObject {
     static func getVideoInfo(with videoURL: String, type: YTJS_VideoInfo_Type, completion: @escaping YTJS_ValueBlock<YTJS_VideoInfo_Result?>) {
         switch type {
         case .offline:
-            ol_getVideoInfo(with: videoURL, completion: completion)
+            OL_Extractor.shared.queryVideo(with: videoURL, event: .videoInfo) { json in
+                let result = ol_parseJson(with: json, videoURL: videoURL)
+                completion(result)
+            }
         case .snaptube:
-            st_getVideoInfo(with: videoURL, completion: completion)
-        }
-    }
-
-    private static func ol_getVideoInfo(with videoURL: String, completion: @escaping YTJS_ValueBlock<YTJS_VideoInfo_Result?>) {
-        OL_Extractor.shared.queryVideo(with: videoURL, event: .videoInfo) { json in
-            let result = ol_parseJson(with: json, videoURL: videoURL)
-            completion(result)
-        }
-    }
-
-    private static func st_getVideoInfo(with videoURL: String, completion: @escaping YTJS_ValueBlock<YTJS_VideoInfo_Result?>) {
-        ST_Extractor.shared.queryVideo(with: videoURL, event: .Extract) { json in
-            let result = ol_parseJson(with: json, videoURL: videoURL)
-            completion(result)
+            ST_Extractor.shared.queryVideo(with: videoURL, event: .Extract) { json in
+                let result = st_parseJson(with: json, videoURL: videoURL)
+                completion(result)
+            }
         }
     }
 }
@@ -81,8 +73,6 @@ class YTJS_VideoInfo: NSObject {
 
 extension YTJS_VideoInfo {
     private static func ol_parseJson(with json: JSON, videoURL: String) -> YTJS_VideoInfo_Result? {
-        print(json)
-
         let song = json["data"]["song"]
         let formatsJson = song["formats"].arrayValue
 
@@ -111,7 +101,6 @@ extension YTJS_VideoInfo {
 
 extension YTJS_VideoInfo {
     private static func st_parseJson(with json: JSON, videoURL: String) -> YTJS_VideoInfo_Result? {
-        print(json)
         let music = json["data"]["music"]
         let formatsJson = music["formats"].arrayValue
         // 格式

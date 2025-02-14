@@ -11,21 +11,22 @@
 @implementation ST_Bridger
 
 - (void)queryUserInfo:(JSValue *)arg1 {
-    NSArray *array = @[@{
-        @"apiVersion": @2,
-        @"installDate": @{},
-        @"isNewInstall": @NO,
-        @"isWithOutConfigVersion": @YES,
-        @"lang" : @"en-US",
-        @"locale" : @"en_US",
-        @"oxygen": @"14.0",
-        @"pn": @"com.meng.snaptube",
-        @"random_id": @90,
-        @"region": @"US",
-        @"u": @"864140897ee046018b2a5e089481c6cf",
-        @"v": @"3.0.5",
-        @"vc": @"300501"
-    }];
+//    NSArray *array = @[@{
+//        @"apiVersion": @2,
+//        @"installDate": @{},
+//        @"isNewInstall": @NO,
+//        @"isWithOutConfigVersion": @YES,
+//        @"lang" : @"en-US",
+//        @"locale" : @"en_US",
+//        @"oxygen": @"14.0",
+//        @"pn": @"com.meng.snaptube",
+//        @"random_id": @90,
+//        @"region": @"US",
+//        @"u": @"864140897ee046018b2a5e089481c6cf",
+//        @"v": @"3.0.5",
+//        @"vc": @"300501"
+//    }];
+    NSArray *array = @[];
     [arg1 callWithArguments:array];
 }
 
@@ -64,21 +65,4 @@
     }
 }
 
-- (void)finishExtractorHomePage:(id)page {
-    if (_delegate) {
-        [_delegate homePageExtractDidFinished:page];
-    }
-}
-
-- (void)finishExtractorCharts:(id)page {
-    if (_delegate) {
-        [_delegate chartsExtractDidFinished:page];
-    }
-}
-
-- (void)finishExtractorGeners:(id)page {
-    if (_delegate) {
-        [_delegate genersExtractDidFinished:page];
-    }
-}
 @end
