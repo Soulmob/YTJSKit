@@ -8,19 +8,19 @@
 import Alamofire
 import UIKit
 
-@objc
+@objcMembers
 public class YTJS_AFWapper: NSObject {
-    @objc
     public static func request(_ request: URLRequest,
-                               successBlock: @escaping (Data?)->(),
-                               failureBlock: @escaping (Error)->())
+                               successBlock: @Sendable @escaping (Data?, HTTPURLResponse?)->(),
+                               failureBlock: @Sendable @escaping (Error, HTTPURLResponse?)->())
     {
         AF.request(request).response { response in
+            let _response = response.response
             switch response.result {
             case .success(let data):
-                successBlock(data)
+                successBlock(data, _response)
             case .failure(let error):
-                failureBlock(error)
+                failureBlock(error, _response)
             }
         }
     }

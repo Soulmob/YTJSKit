@@ -1,8 +1,8 @@
 //
-//  YTJS_Extractor.swift
-//  YouTubeJSKit
+//  YTJS_OfflineExtractor.swift
+//  Example
 //
-//  Created by pro big on 2024/1/12.
+//  Created by pro big on 2024/11/15.
 //
 
 import Alamofire
@@ -10,21 +10,14 @@ import JavaScriptCore
 import SwiftyJSON
 import UIKit
 
-enum JSBridgeEventSource: Int {
-    case YTB = 0
-    case SC = 1
-    case FB = 2
-    case YTMUSIC = 3
-}
-
 enum JSBridgeEventName: Int {
     case Extract = 0
     case Search = 1
-    case Related = 2
-    case Layout = 3
+    case Recommends = 2
+    case Hots = 3
 }
 
-class YTJS_Extractor_Model: NSObject {
+class YTJS_OfflineExtractor_Model: NSObject {
     var uid: Int
     var event: JSBridgeEventName
     var completionBlock: YTJS_ValueBlock<JSON>?
@@ -36,20 +29,20 @@ class YTJS_Extractor_Model: NSObject {
     }
 }
 
-class YTJS_Extractor: NSObject {
-   static let shared = YTJS_Extractor()
+class YTJS_OfflineExtractor: NSObject, @unchecked Sendable {
+   static let shared = YTJS_OfflineExtractor()
     
     private var context: JSContext?
     /// 请求id，递增
     private var requestId: Int = 0
     
-    private lazy var vsplayer: JSBridgeVsplayer = {
-        let vsplayer = JSBridgeVsplayer()
-        vsplayer.delegate = self
-        return vsplayer
+    private lazy var channel: Offline_FilesChannel = {
+        let channel = Offline_FilesChannel()
+//        channel.delegate = self
+        return channel
     }()
     
-    private var extractorModels: [YTJS_Extractor_Model] = []
+    private var extractorModels: [YTJS_OfflineExtractor_Model] = []
     
      func updateJS(with path: String) {
         if let jqueryData = NSData(contentsOfFile: path) as? Data,
@@ -59,32 +52,31 @@ class YTJS_Extractor: NSObject {
             if #available(iOS 16.4, *) {
                 context?.isInspectable = true
             }
-            let sss: NSString = "vsplayer"
-            context?.setObject(vsplayer, forKeyedSubscript: sss)
+            let sss: NSString = "App"
+            context?.setObject(channel, forKeyedSubscript: sss)
             context?.evaluateScript(jqueryString)
         }
     }
     
     func queryVideo(with videoUrl: String, event: JSBridgeEventName, completionBlock: @escaping YTJS_ValueBlock<JSON>) {
         requestId += 1
-        let model = YTJS_Extractor_Model(uid: requestId, event: event, completionBlock: completionBlock)
+        let model = YTJS_OfflineExtractor_Model(uid: requestId, event: event, completionBlock: completionBlock)
         extractorModels.append(model)
         
-        let dict: [String: Any] = ["data": ["url": videoUrl],
+        let dict: [String: Any] = ["data": ["url": videoUrl, "itag": 18, "allTarget": false],
                                    "uid": model.uid,
-                                   "event": model.event.rawValue,
-                                   "source": JSBridgeEventSource.YTB.rawValue]
+                                   "event": model.event.rawValue]
         
         let jsonData = try! JSONSerialization.data(withJSONObject: dict, options: .withoutEscapingSlashes)
         let jsonStr = String(data: jsonData, encoding: .utf8)!
-        let str = String(format: "extractor.postMessageToJSBridge('%@')", jsonStr)
+        let str = String(format: "message.postMessageToJS('%@')", jsonStr)
         context?.evaluateScript(str)
     }
 }
 
 // MARK: - 收到响应
 
-extension YTJS_Extractor: ExtractResultDelegate {
+extension YTJS_OfflineExtractor: ExtractResultDelegate {
     func sendMessage(toNative arg1: [AnyHashable: Any]) {
         let json = JSON(arg1)
         let uid = json["uid"].intValue

@@ -8,7 +8,7 @@
 import Foundation
 
 @available(iOS 13.0, watchOS 6.0, tvOS 13.0, macOS 10.15, *)
-public struct Stream {
+public struct Stream: Sendable {
     
     public let url: URL
     public let itag: ITag
@@ -130,6 +130,12 @@ public struct Stream {
     /// Whether the stream can be played inside the native `AVPlayer`
     public var isNativelyPlayable: Bool {
         (videoCodec?.isNativelyPlayable ?? true) && (audioCodec?.isNativelyPlayable ?? true)
+    }
+    
+    /// smaller pixel size of resolution (e.g. 1080 for 1080p)
+    /// - note: is nil, if no video available
+    public var videoResolution: Int? {
+        itag.videoResolution
     }
     
 }

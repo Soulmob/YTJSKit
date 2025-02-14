@@ -1,14 +1,14 @@
 //
-//  JSBridgeVsplayer.m
+//  ST_Bridger.m
 //  YouTubeJSKit
 //
 //  Created by pro big on 2024/1/12.
 //
 
-#import "JSBridgeVsplayer.h"
+#import "ST_Bridger.h"
 #import <YTJSKit/YTJSKit-Swift.h>
 
-@implementation JSBridgeVsplayer
+@implementation ST_Bridger
 
 - (void)queryUserInfo:(JSValue *)arg1 {
     NSArray *array = @[@{
@@ -34,7 +34,7 @@
 }
 
 - (void)request:(NSString *)arg1 method:(NSString *)arg2 headers:(NSDictionary *)arg3 body:(NSString *)arg4 options:(NSDictionary *)arg5 then:(JSValue *)arg6 {
-   // NSLog(@"cccc ---- 000hook -----JSBridgeVsplayer-request -  %@, %@", arg1, arg4);
+    NSLog(@"cccc ---- 000hook -----ST_Bridger-request -  %@, %@", arg1, arg4);
     NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:arg1]];
     
     [request setHTTPMethod:arg2];
@@ -50,10 +50,10 @@
         [request setValue:vvv forHTTPHeaderField:key];
     }
     
-    [YTJS_AFWapper request:request successBlock:^(NSData * _Nullable data) {
+    [YTJS_AFWapper request:request successBlock:^(NSData * _Nullable data, NSHTTPURLResponse * _Nullable response) {
         NSString *str = [[NSString alloc]initWithData:data encoding:NSUTF8StringEncoding];
         [arg6 callWithArguments:@[@1, str]];
-    } failureBlock:^(NSError * _Nonnull error) {
+    } failureBlock:^(NSError * _Nonnull error, NSHTTPURLResponse * _Nullable response) {
         [arg6 callWithArguments:@[@0, @"", @100, error.localizedDescription]];
     }];
 }
@@ -64,4 +64,21 @@
     }
 }
 
+- (void)finishExtractorHomePage:(id)page {
+    if (_delegate) {
+        [_delegate homePageExtractDidFinished:page];
+    }
+}
+
+- (void)finishExtractorCharts:(id)page {
+    if (_delegate) {
+        [_delegate chartsExtractDidFinished:page];
+    }
+}
+
+- (void)finishExtractorGeners:(id)page {
+    if (_delegate) {
+        [_delegate genersExtractDidFinished:page];
+    }
+}
 @end
