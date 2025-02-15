@@ -16,6 +16,7 @@ NS_ASSUME_NONNULL_BEGIN
 @protocol ST_BridgerResultDelegate <JSExport>
 
 - (void)queryUserInfo:(JSValue *)arg1;
+- (void)queryFIRRemoteConfig:(NSString *)arg1 then:(JSValue *)arg2;
 - (void)trackEventName:(NSString *)arg1 properties:(NSDictionary *)arg2;
 - (void)request:(NSString *)arg1 method:(NSString *)arg2 headers:(NSDictionary *)arg3 body:(NSString *)arg4 options:(NSDictionary *)arg5 then:(JSValue *)arg6;
 - (void)sendMessageToNative:(NSDictionary *)arg1;
@@ -27,9 +28,10 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, weak) id<ST_BridgeMessageDelegate> delegate;
 
 - (void)queryUserInfo:(JSValue *)arg1;
+- (void)queryFIRRemoteConfig:(NSString *)arg1 then:(JSValue *)arg2;
 - (void)trackEventName:(NSString *)arg1 properties:(NSDictionary *)arg2;
 - (void)request:(NSString *)arg1 method:(NSString *)arg2 headers:(NSDictionary *)arg3 body:(NSString *)arg4 options:(NSDictionary *)arg5 then:(JSValue *)arg6;
-
+- (void)sendMessageToNative:(NSDictionary *)arg1;
 @end
 
 NS_ASSUME_NONNULL_END

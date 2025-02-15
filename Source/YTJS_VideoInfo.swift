@@ -7,6 +7,7 @@
 
 import SwiftyJSON
 import UIKit
+import AVKit
 
 /// 单个下载的类型
 public enum YTJS_URLFormatType: Int {
@@ -47,13 +48,8 @@ public class YTJS_VideoInfo_Result: NSObject {
     }
 }
 
-public enum YTJS_VideoInfo_Type {
-    case offline
-    case snaptube
-}
-
 class YTJS_VideoInfo: NSObject {
-    static func getVideoInfo(with videoURL: String, type: YTJS_VideoInfo_Type, completion: @escaping YTJS_ValueBlock<YTJS_VideoInfo_Result?>) {
+    static func getVideoInfo(with videoURL: String, type: YTJS_Type, completion: @escaping YTJS_ValueBlock<YTJS_VideoInfo_Result?>) {
         switch type {
         case .offline:
             OL_Extractor.shared.queryVideo(with: videoURL, event: .videoInfo) { json in
@@ -64,6 +60,67 @@ class YTJS_VideoInfo: NSObject {
             ST_Extractor.shared.queryVideo(with: videoURL, event: .Extract) { json in
                 let result = st_parseJson(with: json, videoURL: videoURL)
                 completion(result)
+            }
+        }
+    }
+    
+    static func getVideoInfo(with videoURL: String, completion: @escaping YTJS_ValueBlock<YTJS_VideoInfo_Result?>) {
+        var ol_result: YTJS_VideoInfo_Result?
+        var st_result: YTJS_VideoInfo_Result?
+        
+        var ol_canPlay: Bool = false
+        var st_canPlay: Bool = false
+        
+        let group = DispatchGroup()
+        group.enter()
+        OL_Extractor.shared.queryVideo(with: videoURL, event: .videoInfo) { json in
+            if let result = ol_parseJson(with: json, videoURL: videoURL),
+               let url = URL(string: result.format.url)
+            {
+                Self.canPlayMediaURL(url: url) { canPlay in
+                    ol_result = result
+                    ol_canPlay = canPlay
+                    group.leave()
+                }
+            } else {
+                group.leave()
+            }
+        }
+        group.enter()
+        ST_Extractor.shared.queryVideo(with: videoURL, event: .Extract) { json in
+            if let result = st_parseJson(with: json, videoURL: videoURL),
+               let url = URL(string: result.format.url)
+            {
+                Self.canPlayMediaURL(url: url) { canPlay in
+                    st_result = result
+                    st_canPlay = canPlay
+                    group.leave()
+                }
+            } else {
+                group.leave()
+            }
+        }
+        group.notify(queue: .main) {
+            if st_canPlay {
+                print("ppp----snaptube可以播放")
+                completion(st_result)
+            } else if ol_canPlay {
+                print("ppp----offline可以播放")
+                completion(ol_result)
+            } else {
+                print("ppp----都不可以播放")
+                let result = st_result ?? ol_result
+                completion(result)
+            }
+        }
+    }
+    
+    private static func canPlayMediaURL(url: URL, completion: @escaping (Bool)->Void) {
+        DispatchQueue.global().async {
+            let asset = AVURLAsset(url: url)
+            let formats = asset.availableMetadataFormats
+            DispatchQueue.main.async {
+                completion(formats.count > 0)// 如果有可用的元数据，说明是可以播放的媒体文件
             }
         }
     }

@@ -8,8 +8,13 @@
 import UIKit
 import SwiftyJSON
 
+public enum YTJS_Type {
+    case offline
+    case snaptube
+}
+
 public class YTJSKit: NSObject {
-    public static func updateConfig(with json: JSON, type: YTJS_VideoInfo_Type) {
+    public static func updateConfig(with json: JSON, type: YTJS_Type) {
         switch type {
         case .offline:
             YTJSConfig.shared.offline = OL_RemoteConfig(json: json)
@@ -18,7 +23,7 @@ public class YTJSKit: NSObject {
         }
     }
     
-    public static func updateJS(with path: String, type: YTJS_VideoInfo_Type) {
+    public static func updateJS(with path: String, type: YTJS_Type) {
         switch type {
         case .offline:
             OL_Extractor.shared.updateJS(with: path)
@@ -27,7 +32,7 @@ public class YTJSKit: NSObject {
         }
     }
     
-    public static func getVideoInfo(with url: String, type: YTJS_VideoInfo_Type, completion: @escaping YTJS_ValueBlock<YTJS_VideoInfo_Result?>) {
-        YTJS_VideoInfo.getVideoInfo(with: url, type: type, completion: completion)
+    public static func getVideoInfo(with url: String, completion: @escaping YTJS_ValueBlock<YTJS_VideoInfo_Result?>) {
+        YTJS_VideoInfo.getVideoInfo(with: url, completion: completion)
     }
 }

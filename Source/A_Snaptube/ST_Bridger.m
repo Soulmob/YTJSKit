@@ -11,6 +11,7 @@
 @implementation ST_Bridger
 
 - (void)queryUserInfo:(JSValue *)arg1 {
+    NSLog(@"cc------000hook -----AEBridger-queryUserInfo -   %@", arg1);
 //    NSArray *array = @[@{
 //        @"apiVersion": @2,
 //        @"installDate": @{},
@@ -26,7 +27,7 @@
 //        @"v": @"3.0.5",
 //        @"vc": @"300501"
 //    }];
-    NSArray *array = @[];
+    NSArray *array = @[@{}];
     [arg1 callWithArguments:array];
 }
 
@@ -34,8 +35,13 @@
 //    NSLog(@"cccc ---- 000hook -----trackEventName -  %@, %@", arg1, arg2);
 }
 
+- (void)queryFIRRemoteConfig:(NSString *)arg1 then:(JSValue *)arg2 {
+    NSLog(@"cc------000hook -----AEBridger-queryFIRRemoteConfig -   %@, %@", arg1, arg2);
+    [arg2 callWithArguments:@[]];
+}
+
 - (void)request:(NSString *)arg1 method:(NSString *)arg2 headers:(NSDictionary *)arg3 body:(NSString *)arg4 options:(NSDictionary *)arg5 then:(JSValue *)arg6 {
-    NSLog(@"cccc ---- 000hook -----ST_Bridger-request -  %@, %@", arg1, arg4);
+    NSLog(@"cc------000hook -----AEBridger-request -   %@, %@, %@, %@, %@, %@", arg1, arg2, arg3, arg4, arg5, arg6);
     NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:arg1]];
     
     [request setHTTPMethod:arg2];
