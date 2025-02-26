@@ -7,8 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		1901FE862D60F075002BBE83 /* aebr.js in Resources */ = {isa = PBXBuildFile; fileRef = 1901FE852D60F075002BBE83 /* aebr.js */; };
 		190FE5C12D5C943E001DB836 /* common.js in Resources */ = {isa = PBXBuildFile; fileRef = 190FE5C02D5C943E001DB836 /* common.js */; };
-		1962751C2D5DE005004A6202 /* ytb.js in Resources */ = {isa = PBXBuildFile; fileRef = 1962751B2D5DE005004A6202 /* ytb.js */; };
+		19708EFA2D6734ED003F9DF3 /* ytb.js in Resources */ = {isa = PBXBuildFile; fileRef = 19708EF92D6734ED003F9DF3 /* ytb.js */; };
+		19708EFC2D68CF24003F9DF3 /* default.json in Resources */ = {isa = PBXBuildFile; fileRef = 19708EFB2D68CF24003F9DF3 /* default.json */; };
+		198725552D6DD88A005B49DB /* aaa.txt in Resources */ = {isa = PBXBuildFile; fileRef = 198725542D6DD88A005B49DB /* aaa.txt */; };
 		198F91832B517D5100E6CB0F /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 198F91822B517D5100E6CB0F /* AppDelegate.swift */; };
 		198F91852B517D5100E6CB0F /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 198F91842B517D5100E6CB0F /* SceneDelegate.swift */; };
 		198F91872B517D5100E6CB0F /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 198F91862B517D5100E6CB0F /* ViewController.swift */; };
@@ -21,9 +24,12 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		1901FE852D60F075002BBE83 /* aebr.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = aebr.js; sourceTree = "<group>"; };
 		190FE5C02D5C943E001DB836 /* common.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = common.js; sourceTree = "<group>"; };
-		1962751B2D5DE005004A6202 /* ytb.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = ytb.js; sourceTree = "<group>"; };
+		19708EF92D6734ED003F9DF3 /* ytb.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = ytb.js; sourceTree = "<group>"; };
+		19708EFB2D68CF24003F9DF3 /* default.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = default.json; sourceTree = "<group>"; };
 		1986BEE42C4A8E34004F49BF /* Example.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Example.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		198725542D6DD88A005B49DB /* aaa.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = aaa.txt; sourceTree = "<group>"; };
 		198F91822B517D5100E6CB0F /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		198F91842B517D5100E6CB0F /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
 		198F91862B517D5100E6CB0F /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -68,12 +74,15 @@
 				198F91842B517D5100E6CB0F /* SceneDelegate.swift */,
 				198F91862B517D5100E6CB0F /* ViewController.swift */,
 				198F91882B517D5100E6CB0F /* Main.storyboard */,
+				198725542D6DD88A005B49DB /* aaa.txt */,
 				198F918B2B517D5300E6CB0F /* Assets.xcassets */,
 				198F918D2B517D5300E6CB0F /* LaunchScreen.storyboard */,
 				198F91902B517D5300E6CB0F /* Info.plist */,
+				19708EFB2D68CF24003F9DF3 /* default.json */,
+				1901FE852D60F075002BBE83 /* aebr.js */,
+				19708EF92D6734ED003F9DF3 /* ytb.js */,
 				19AABF632CE73B620094049F /* rm_extractor.js */,
 				19ECA5E72D32824A00BA4724 /* homepage.js */,
-				1962751B2D5DE005004A6202 /* ytb.js */,
 				190FE5C02D5C943E001DB836 /* common.js */,
 				19AABFF12CE751AB0094049F /* Example-Bridging-Header.h */,
 			);
@@ -158,12 +167,15 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				1962751C2D5DE005004A6202 /* ytb.js in Resources */,
+				19708EFA2D6734ED003F9DF3 /* ytb.js in Resources */,
 				19ECA5E82D32824A00BA4724 /* homepage.js in Resources */,
 				19AABF642CE73B620094049F /* rm_extractor.js in Resources */,
+				19708EFC2D68CF24003F9DF3 /* default.json in Resources */,
 				198F918F2B517D5300E6CB0F /* LaunchScreen.storyboard in Resources */,
+				1901FE862D60F075002BBE83 /* aebr.js in Resources */,
 				190FE5C12D5C943E001DB836 /* common.js in Resources */,
 				198F918C2B517D5300E6CB0F /* Assets.xcassets in Resources */,
+				198725552D6DD88A005B49DB /* aaa.txt in Resources */,
 				198F918A2B517D5100E6CB0F /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -382,7 +394,7 @@
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				IPHONEOS_DEPLOYMENT_TARGET = 15;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.5;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -416,7 +428,7 @@
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				IPHONEOS_DEPLOYMENT_TARGET = 15;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.5;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",

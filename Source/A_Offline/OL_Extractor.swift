@@ -59,6 +59,7 @@ class OL_Extractor: NSObject, @unchecked Sendable {
     func updateJS(with path: String) {
         let url = URL(fileURLWithPath: path)
         if let jqueryString = try? NSString(contentsOf: url, encoding: String.Encoding.utf8.rawValue) {
+            print(path)
             let jsValue = context?.evaluateScript(jqueryString as String)
         }
     }

@@ -24,6 +24,14 @@ enum JSBridgeEventName: Int {
     case Layout = 3
 }
 
+/// 搜索类型
+public enum JSBridgePayloadSearchFilter: Int {
+    case ALL = 0
+    case Track = 1
+    case Playlist = 2
+    case YouTubeMusic = 3
+}
+
 class ST_Extractor_Model: NSObject {
     var uid: Int
     var event: JSBridgeEventName
@@ -48,7 +56,7 @@ class ST_Extractor: NSObject, @unchecked Sendable {
         vsplayer.delegate = self
         return vsplayer
     }()
-    
+
     private var extractorModels: [ST_Extractor_Model] = []
 
     override init() {
@@ -60,7 +68,7 @@ class ST_Extractor: NSObject, @unchecked Sendable {
         let key_vsplayer: NSString = "vsplayer"
         context?.setObject(vsplayer, forKeyedSubscript: key_vsplayer)
     }
-    
+
     func updateJS(with path: String) {
         let url = URL(fileURLWithPath: path)
         if let jqueryString = try? NSString(contentsOf: url, encoding: String.Encoding.utf8.rawValue) {
@@ -72,14 +80,36 @@ class ST_Extractor: NSObject, @unchecked Sendable {
         requestId += 1
         let model = ST_Extractor_Model(uid: requestId, event: event, completionBlock: completionBlock)
         extractorModels.append(model)
-        
+
         let dict: [String: Any] = ["data": ["url": videoUrl],
                                    "uid": model.uid,
                                    "event": model.event.rawValue,
                                    "source": JSBridgeEventSource.YTB.rawValue]
-        
+
         let jsonData = try! JSONSerialization.data(withJSONObject: dict, options: .withoutEscapingSlashes)
         let jsonStr = String(data: jsonData, encoding: .utf8)!
+        let str = String(format: "extractor.postMessageToJSBridge('%@')", jsonStr)
+        context?.evaluateScript(str)
+    }
+
+    func search(key keyword: String,
+                next: String,
+                filter: Int,
+                completionBlock: @escaping YTJS_ValueBlock<JSON>)
+    {
+        requestId += 1
+        let model = ST_Extractor_Model(uid: requestId, event: .Search, completionBlock: completionBlock)
+        extractorModels.append(model)
+
+        let dict: [String: Any] = ["data": ["keyword": keyword,
+                                            "next": next,
+                                            "filter": filter],
+                                   "uid": model.uid,
+                                   "event": model.event.rawValue,
+                                   "source": JSBridgeEventSource.YTB.rawValue]
+        let jsonData = try! JSONSerialization.data(withJSONObject: dict, options: .withoutEscapingSlashes)
+        let jsonStr = String(data: jsonData, encoding: .utf8)!
+
         let str = String(format: "extractor.postMessageToJSBridge('%@')", jsonStr)
         context?.evaluateScript(str)
     }
@@ -90,6 +120,7 @@ class ST_Extractor: NSObject, @unchecked Sendable {
 extension ST_Extractor: ST_BridgeMessageDelegate {
     func sendMessage(toNative arg1: [AnyHashable: Any]) {
         let json = JSON(arg1)
+        print(json)
         let uid = json["uid"].intValue
         let event = json["event"].intValue
         let dataJson = json["data"]

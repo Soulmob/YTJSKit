@@ -11,24 +11,29 @@
 @implementation OL_Bridger
 
 - (void)fetchRemoteConfigWithKey:(NSString *)key then:(JSValue *)then {
+    NSLog(@"cccc ---- 000hook -----fetchRemoteConfigWithKey -  %@, %@", key, then.toString);
     if ([key isEqualToString:@"use_api_for_ytb"]) {
-        [then callWithArguments:@[@(YES)]];
-    }
+        id value = [YTJS_Config shared].config.offline.use_api_for_ytb;
+        [then callWithArguments:@[value]];
+    } else
     if ([key isEqualToString:@"use_api_for_music"]) {
-        [then callWithArguments:@[@(YES)]];
-    }
+        id value = [YTJS_Config shared].config.offline.use_api_for_music;
+        [then callWithArguments:@[value]];
+    } else
     if ([key isEqualToString:@"load_pot_webview"]) {
-        [then callWithArguments:@[@(YES)]];
-    }
+        id value = [YTJS_Config shared].config.offline.load_pot_webview;
+        [then callWithArguments:@[value]];
+    } else
     if ([key isEqualToString:@"YTBParams"]) {
-        id value = [YTJSConfig shared].offline.YTBParams;
+        id value = [YTJS_Config shared].config.offline.YTBParams;
         [then callWithArguments:@[value]];
-    }
+    } else
     if ([key isEqualToString:@"INNERTUBE_CLIENTS"]) {
-        id value = [YTJSConfig shared].offline.INNERTUBE_CLIENTS;
+        id value = [YTJS_Config shared].config.offline.INNERTUBE_CLIENTS;
         [then callWithArguments:@[value]];
+    } else {
+        [then callWithArguments:@[]];
     }
-//    NSLog(@"cccc ---- 000hook -----fetchRemoteConfigWithKey -  %@, %@", key, then.toString);
 }
 
 - (void)sendMessageToNative:(id)native {
@@ -38,14 +43,11 @@
 }
 
 - (void)fetchPotToken:(BOOL)token then:(JSValue *)then {
-//    NSLog(@"cccc ---- 000hook -----fetchPotToken -  %d, %@", token, then.toString);
-//    NSString *to = @"MnRZaB_-CH35zVlQ2P4-0gONbRtp33YfRrfOpRAD6gePFADD_RlveDkMsfkeLptAV-q-8OIzeV08wbKummdN3u7743meUDLPiPdl1eaLMcF49nqK-Bpq-mNCsr1AGZPqLlt4HSFIa7RZjRUSKepfgirRzsidUA==";
     [then callWithArguments:@[@""]];
 }
 
 - (void)getCookies:(id)cookies then:(JSValue *)then {
-//    NSLog(@"cccc ---- 000hook -----getCookies -  %d, %@", cookies, then.toString);
-    [then callWithArguments:@[@(YES)]];
+    [then callWithArguments:@[@""]];
 }
 
 - (void)fetchAppInfoToNative:(NSString *)native then:(JSValue *)then {
@@ -57,7 +59,7 @@
     }
     
     if ([native isEqualToString:@"v"]) {
-        id value = [YTJSConfig shared].offline.appVersion;
+        id value = [YTJS_Config shared].config.offline.appVersion;
         [then callWithArguments:@[value]];
     }
 }
@@ -87,7 +89,6 @@
         NSString *vvv = [NSString stringWithFormat:@"%@", value];
         [request setValue:vvv forHTTPHeaderField:key];
     }
-    //{success:e,code:t,data:u,responseHeaders:i,responseURL:o,errorMsg:s}
     [YTJS_AFWapper request:request successBlock:^(NSData * _Nullable data, NSHTTPURLResponse * _Nullable response) {
         NSString *str = [[NSString alloc]initWithData:data encoding:NSUTF8StringEncoding];
         [then callWithArguments:@[@1, @200, str, response.allHeaderFields, native, @""]];
