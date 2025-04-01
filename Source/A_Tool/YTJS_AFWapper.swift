@@ -14,27 +14,13 @@ public class YTJS_AFWapper: NSObject {
                                successBlock: @Sendable @escaping (Data?, HTTPURLResponse?)->(),
                                failureBlock: @Sendable @escaping (Error, HTTPURLResponse?)->())
     {
+        var request = request
+        request.timeoutInterval = 40
         AF.request(request).response { response in
             let _response = response.response
             switch response.result {
             case .success(let data):
                 successBlock(data, _response)
-            case .failure(let error):
-                failureBlock(error, _response)
-            }
-        }
-    }
-    
-    
-    public static func requestString(_ request: URLRequest,
-                               successBlock: @Sendable @escaping (String?, HTTPURLResponse?)->(),
-                               failureBlock: @Sendable @escaping (Error, HTTPURLResponse?)->())
-    {
-        AF.request(request).responseString { response in
-            let _response = response.response
-            switch response.result {
-            case .success(let string):
-                successBlock(string, _response)
             case .failure(let error):
                 failureBlock(error, _response)
             }

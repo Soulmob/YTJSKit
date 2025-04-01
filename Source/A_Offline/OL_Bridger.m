@@ -11,7 +11,7 @@
 @implementation OL_Bridger
 
 - (void)fetchRemoteConfigWithKey:(NSString *)key then:(JSValue *)then {
-    NSLog(@"cccc ---- 000hook -----fetchRemoteConfigWithKey -  %@, %@", key, then.toString);
+//    NSLog(@"cccc ---- 000hook -----fetchRemoteConfigWithKey -  %@, %@", key, then.toString);
     if ([key isEqualToString:@"use_api_for_ytb"]) {
         id value = [YTJS_Config shared].config.offline.use_api_for_ytb;
         [then callWithArguments:@[value]];

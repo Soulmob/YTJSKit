@@ -13,10 +13,11 @@ import SwiftyJSON
 class ViewController: UIViewController {
 
 //    private let url = "https://www.youtube.com/watch?v=495zc7_vGgA"
-    private let url = "https://www.youtube.com/watch?v=edcRi66e_NA"
+//    private let url = "https://www.youtube.com/watch?v=edcRi66e_NA"
 //    private let url = "https://music.youtube.com/watch?v=8ZP5eqm4JqM"
 //    private let url = "https://www.youtube.com/watch?v=3NNhrqHZqlI"//bu
-//    private let url = "https://music.youtube.com/watch?v=XqoanTj5pNY"
+    private let url = "https://music.youtube.com/watch?v=XqoanTj5pNY"
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -24,13 +25,11 @@ class ViewController: UIViewController {
     
     @IBAction func next111(_ sender: Any) {
         YTJSKit.getVideoInfo(with: url) { result in
+            print("-----------请求结束")
             if let url = result?.format.url {
                 print(url)
-                let url = URL(string: url)!
-                let player = AVPlayer(url: url)
-                let playerViewController = AVPlayerViewController()
-                playerViewController.player = player
-                self.present(playerViewController, animated: true)
+                let playerVC = PlayerViewController(url: URL(string: url)!)
+                self.navigationController?.pushViewController(playerVC, animated: true)
             }
         }
     }

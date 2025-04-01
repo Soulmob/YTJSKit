@@ -37,10 +37,48 @@ class ST_Extractor_Model: NSObject {
     var event: JSBridgeEventName
     var completionBlock: YTJS_ValueBlock<JSON>?
 
+    var timer: DispatchSourceTimer?
+    private var backgroundTask: UIBackgroundTaskIdentifier = .invalid
+
     init(uid: Int, event: JSBridgeEventName, completionBlock: YTJS_ValueBlock<JSON>? = nil) {
         self.uid = uid
         self.event = event
         self.completionBlock = completionBlock
+        let queue = DispatchQueue(label: "ST_Extractor-\(event.rawValue)-\(uid)")
+        timer = DispatchSource.makeTimerSource(queue: queue)
+    }
+
+    func startTimer(timeoutBlock: @escaping () -> Void) {
+        // 开启后台任务
+        backgroundTask = UIApplication.shared.beginBackgroundTask(withName: "BackgroundTimer_ST_Extractor_\(event.rawValue)-\(uid)") {
+            // 超时处理
+            self.endBackgroundTask()
+        }
+        timer?.schedule(deadline: .now() + 40, repeating: .never)
+        timer?.setEventHandler(handler: { [weak self] in
+            DispatchQueue.main.async {
+                timeoutBlock()
+            }
+            self?.cancelTimer()
+        })
+        timer?.resume()
+    }
+
+    private func cancelTimer() {
+        timer?.cancel()
+        timer = nil
+        endBackgroundTask()
+    }
+
+    private func endBackgroundTask() {
+        if backgroundTask != .invalid {
+            UIApplication.shared.endBackgroundTask(backgroundTask)
+            backgroundTask = .invalid
+        }
+    }
+
+    deinit {
+        cancelTimer()
     }
 }
 
@@ -90,6 +128,10 @@ class ST_Extractor: NSObject, @unchecked Sendable {
         let jsonStr = String(data: jsonData, encoding: .utf8)!
         let str = String(format: "extractor.postMessageToJSBridge('%@')", jsonStr)
         context?.evaluateScript(str)
+
+        model.startTimer { [weak self] in
+            self?.result(uid: model.uid, event: model.event.rawValue, dataJson: JSON(""))
+        }
     }
 
     func search(key keyword: String,
@@ -120,15 +162,18 @@ class ST_Extractor: NSObject, @unchecked Sendable {
 extension ST_Extractor: ST_BridgeMessageDelegate {
     func sendMessage(toNative arg1: [AnyHashable: Any]) {
         let json = JSON(arg1)
-        print(json)
         let uid = json["uid"].intValue
         let event = json["event"].intValue
         let dataJson = json["data"]
+        result(uid: uid, event: event, dataJson: dataJson)
+    }
+
+    private func result(uid: Int, event: Int, dataJson: JSON) {
         guard let model = extractorModels.first(where: { $0.uid == uid && $0.event.rawValue == event }) else {
             return
         }
         model.completionBlock?(dataJson)
         model.completionBlock = nil
-        extractorModels.removeAll(where: { $0.uid == model.uid })
+        extractorModels.removeAll(where: { $0.uid == uid })
     }
 }
