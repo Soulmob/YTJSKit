@@ -20,7 +20,8 @@ public class YTJS_Config_File: NSObject {
     }
     
     convenience init?(json: JSON, type: YTJS_Config_File_Type) {
-        guard let v = json["v"].string, v.isEmpty == false,
+        guard let v = json["v"].string,
+              v.isEmpty == false,
               let u = json["u"].string else {
             return nil
         }
@@ -31,9 +32,11 @@ public class YTJS_Config_File: NSObject {
 }
 
 public enum YTJS_Config_File_Type: Int {
-    case offline_common
-    case offline_ytb
     case snaptube_ytb
+    
+    var desc: String {
+        return String(describing: self)
+    }
     
     var jsPath: String {
         return root + jsName
@@ -41,10 +44,6 @@ public enum YTJS_Config_File_Type: Int {
     
     var jsName: String {
         switch self {
-        case .offline_common:
-            return "common"
-        case .offline_ytb:
-            return "ytb"
         case .snaptube_ytb:
             return "rm_extractor.js"
         }
@@ -52,10 +51,6 @@ public enum YTJS_Config_File_Type: Int {
     
     var root: String {
         switch self {
-        case .offline_common:
-            return YTJS_Path.offline_root
-        case .offline_ytb:
-            return YTJS_Path.offline_root
         case .snaptube_ytb:
             return YTJS_Path.snaptube_root
         }
@@ -64,10 +59,6 @@ public enum YTJS_Config_File_Type: Int {
     private var versionKey: String {
         var name: String
         switch self {
-        case .offline_common:
-            name = "offline_common"
-        case .offline_ytb:
-            name = "offline_ytb"
         case .snaptube_ytb:
             name = "snaptube_ytb"
         }

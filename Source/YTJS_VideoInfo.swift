@@ -50,34 +50,11 @@ public class YTJS_VideoInfo_Result: NSObject {
 
 class YTJS_VideoInfo: NSObject {
     static func getVideoInfo(with videoURL: String, completion: @escaping YTJS_ValueBlock<YTJS_VideoInfo_Result?>) {
-        Self.getVideoInfo(with: videoURL, type: YTJS_Config.shared.config.useType, completion: completion)
-    }
-    
-    private static func getVideoInfo(with videoURL: String, type: YTJS_Type, isChangedType: Bool = false, completion: @escaping YTJS_ValueBlock<YTJS_VideoInfo_Result?>) {
-        switch type {
-        case .offline:
-            OL_Extractor.shared.queryVideo(with: videoURL, event: .videoInfo) { json in
-                if let result = ol_parseJson(with: json, videoURL: videoURL) {
-                    completion(result)
-                } else {
-                    if isChangedType {
-                        completion(nil)
-                        return
-                    }
-                    Self.getVideoInfo(with: videoURL, type: .snaptube, isChangedType: true, completion: completion)
-                }
-            }
-        case .snaptube:
-            ST_Extractor.shared.queryVideo(with: videoURL, event: .Extract) { json in
-                if let result = st_parseJson(with: json, videoURL: videoURL) {
-                    completion(result)
-                } else {
-                    if isChangedType {
-                        completion(nil)
-                        return
-                    }
-                    Self.getVideoInfo(with: videoURL, type: .offline, isChangedType: true, completion: completion)
-                }
+        ST_Extractor.shared.queryVideo(with: videoURL, event: .Extract) { json in
+            if let result = st_parseJson(with: json, videoURL: videoURL) {
+                completion(result)
+            } else {
+                completion(nil)
             }
         }
     }

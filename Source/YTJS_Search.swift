@@ -14,7 +14,7 @@ class YTJS_Search: NSObject {
 //        case .offline:
 //            OL_Extractor.shared.search(key: key, next: next, filter: filter, completionBlock: completion)
 //        case .snaptube:
-//            ST_Extractor.shared.search(key: key, next: next, filter: filter, completionBlock: completion)
+            ST_Extractor.shared.search(key: key, next: next, filter: filter, completionBlock: completion)
 //        }
     }
 }

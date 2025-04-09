@@ -77,11 +77,11 @@
 }
 
 - (void)_request:(NSString *)arg1 method:(NSString *)arg2 headers:(NSDictionary *)arg3 body:(NSString *)arg4 options:(NSDictionary *)arg5 then:(JSValue *)arg6 {
-//    NSLog(@"cc------000hook -----AEBridger-request arg1 -   %@", arg1);
-//    NSLog(@"cc------000hook -----AEBridger-request arg2 -   %@", arg2);
-//    NSLog(@"cc------000hook -----AEBridger-request arg3 -   %@", arg3);
-//    NSLog(@"cc------000hook -----AEBridger-request arg4 -   %@", arg4);
-//    NSLog(@"cc------000hook -----AEBridger-request arg5 -   %@", arg5);
+    NSLog(@"cc------000hook -----AEBridger-request arg1 -   %@", arg1);
+    NSLog(@"cc------000hook -----AEBridger-request arg2 -   %@", arg2);
+    NSLog(@"cc------000hook -----AEBridger-request arg3 -   %@", arg3);
+    NSLog(@"cc------000hook -----AEBridger-request arg4 -   %@", arg4);
+    NSLog(@"cc------000hook -----AEBridger-request arg5 -   %@", arg5);
     
     NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:arg1]];
     

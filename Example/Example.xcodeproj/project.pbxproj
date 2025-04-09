@@ -16,6 +16,7 @@
 		198F918C2B517D5300E6CB0F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 198F918B2B517D5300E6CB0F /* Assets.xcassets */; };
 		198F918F2B517D5300E6CB0F /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 198F918D2B517D5300E6CB0F /* LaunchScreen.storyboard */; };
 		1990A51C2D93A0CB00EA9396 /* PlayerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1990A51B2D93A0CB00EA9396 /* PlayerViewController.swift */; };
+		19C1B0722D9D8E1F00059663 /* test.js in Resources */ = {isa = PBXBuildFile; fileRef = 19C1B0712D9D8E1F00059663 /* test.js */; };
 		F9C42C1115797D3D1DFC82CF /* Pods_Example.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 50FACFD5BB8AF723018DC37B /* Pods_Example.framework */; };
 /* End PBXBuildFile section */
 
@@ -32,6 +33,7 @@
 		198F91902B517D5300E6CB0F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		1990A51B2D93A0CB00EA9396 /* PlayerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerViewController.swift; sourceTree = "<group>"; };
 		19AABFF12CE751AB0094049F /* Example-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Example-Bridging-Header.h"; sourceTree = "<group>"; };
+		19C1B0712D9D8E1F00059663 /* test.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = test.js; sourceTree = "<group>"; };
 		1B033873563670E5D0C6EA87 /* Pods-Example.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Example.debug.xcconfig"; path = "Target Support Files/Pods-Example/Pods-Example.debug.xcconfig"; sourceTree = "<group>"; };
 		50FACFD5BB8AF723018DC37B /* Pods_Example.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Example.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		BB52EAEF6D1CFAC4F6D8FEF3 /* Pods-Example.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Example.release.xcconfig"; path = "Target Support Files/Pods-Example/Pods-Example.release.xcconfig"; sourceTree = "<group>"; };
@@ -66,6 +68,7 @@
 				198F91842B517D5100E6CB0F /* SceneDelegate.swift */,
 				198F91862B517D5100E6CB0F /* ViewController.swift */,
 				1990A51B2D93A0CB00EA9396 /* PlayerViewController.swift */,
+				19C1B0712D9D8E1F00059663 /* test.js */,
 				198F91882B517D5100E6CB0F /* Main.storyboard */,
 				198725542D6DD88A005B49DB /* aaa.txt */,
 				198F918B2B517D5300E6CB0F /* Assets.xcassets */,
@@ -155,6 +158,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				19C1B0722D9D8E1F00059663 /* test.js in Resources */,
 				19708EFC2D68CF24003F9DF3 /* default.json in Resources */,
 				198F918F2B517D5300E6CB0F /* LaunchScreen.storyboard in Resources */,
 				198F918C2B517D5300E6CB0F /* Assets.xcassets in Resources */,

@@ -6,10 +6,10 @@
 //
 
 import Alamofire
-import MJExtension
 import SSZipArchive
 import SwiftyJSON
 import UIKit
+import Foundation
 
 @objcMembers
 public class YTJS_Config: NSObject {
@@ -17,36 +17,44 @@ public class YTJS_Config: NSObject {
         
     public var config = YTJS_Config_Model()
     
-    /// 初始化。拷贝文件到指定位置
+    /// 初始化。读取bundle里的版本号
     func initial() {
-        var jsonPath = YTJS_Path.config
-        if FileManager.default.fileExists(atPath: jsonPath) == false {
-            let bundlePath = bundle().path(forResource: "default.json", ofType: nil)!
-            try? FileManager.default.copyItem(atPath: bundlePath, toPath: jsonPath)
-        }
-        
-        if let data = try? Data(contentsOf: URL(fileURLWithPath: jsonPath)),
+        let bundlePath = bundle().path(forResource: "default.json", ofType: nil)!
+        if let data = try? Data(contentsOf: URL(fileURLWithPath: bundlePath)),
            let json = try? JSON(data: data)
         {
             config = YTJS_Config_Model(json: JSON(json))
             
-            copyJS(file: config.offline.file_common)
-            copyJS(file: config.offline.file_ytb)
             copyJS(file: config.snaptube.file_ytb)
             
             func copyJS(file: YTJS_Config_File?) {
                 guard let file = file else {
                     return
                 }
-                var jsPath = file.type.jsPath
-                if FileManager.default.fileExists(atPath: jsPath) {
+                let jsPath = file.type.jsPath
+                let jsPath_bundle = bundle().path(forResource: file.type.jsName, ofType: nil)!
+                //版本号不存在
+                if file.type.version == nil {
+                    copy()
                     return
                 }
-                let bundlePath = bundle().path(forResource: file.type.jsName, ofType: nil)!
-                do {
-                    try FileManager.default.copyItem(atPath: bundlePath, toPath: jsPath)
-                    file.type.version = file.v
-                } catch {}
+                //版本号小，需要将bundle替换进去
+                if let version = file.type.version,
+                   YTJS_Version(version) < YTJS_Version(file.v)
+                {
+                    copy()
+                }
+                
+                func copy() {
+                    do {
+                        if FileManager.default.fileExists(atPath: jsPath) {
+                            try FileManager.default.removeItem(atPath: jsPath)
+                        }
+                        try FileManager.default.copyItem(atPath: jsPath_bundle, toPath: jsPath)
+                        file.type.version = file.v
+                        YTJS_Print("版本号替换成功: \(file.type.desc) \(file.v)")
+                    } catch { }
+                }
             }
         }
         evaluateScript()
@@ -55,16 +63,9 @@ public class YTJS_Config: NSObject {
     private func evaluateScript() {
         let queue = DispatchQueue(label: "ytjs_evaluateScript")
         queue.async {
-            YTJSKit.updateJS(with: .offline_common)
-            queue.async {
-                YTJSKit.updateJS(with: .offline_ytb)
-                queue.async {
-                    YTJSKit.updateJS(with: .snaptube_ytb)
-                    print("YTJS: ol_com-", YTJS_Config_File_Type.offline_common.version)
-                    print("YTJS: ol_ytb-", YTJS_Config_File_Type.offline_ytb.version)
-                    print("YTJS: st_ytb-", YTJS_Config_File_Type.snaptube_ytb.version)
-                }
-            }
+            let type = YTJS_Config_File_Type.snaptube_ytb
+            YTJSKit.updateJS(with: type)
+            YTJS_Print("\(type.desc) - \(type.version)")
         }
     }
     
@@ -72,11 +73,9 @@ public class YTJS_Config: NSObject {
         let remoteConfig = YTJS_Config_Model(json: json)
         config = remoteConfig
         
-        let file_ol_com = remoteConfig.offline.file_common
-        let file_ol_ytb = remoteConfig.offline.file_ytb
         let file_st_ytb = remoteConfig.snaptube.file_ytb
         
-        let filesArray = [file_ol_com, file_ol_ytb, file_st_ytb].compactMap { $0 }
+        let filesArray = [file_st_ytb].compactMap { $0 }
         let group = DispatchGroup()
         for file in filesArray {
             group.enter()
@@ -85,9 +84,6 @@ public class YTJS_Config: NSObject {
             }
         }
         group.notify(queue: DispatchQueue.global()) {
-            // 存储
-            let jsonData = self.config.mj_JSONData()
-            FileManager.default.createFile(atPath: YTJS_Path.config, contents: jsonData)
             self.evaluateScript()
         }
     }
@@ -97,7 +93,8 @@ extension YTJS_Config {
     private func download(with file: YTJS_Config_File, completion: @escaping () -> Void) {
         let old_v = file.type.version
         let new_v = file.v
-        if file.v.isEmpty || old_v == new_v { // 版本不存在，或者版本号一致
+        if old_v == new_v { // 版本不存在，或者版本号一致
+            YTJS_Print("版本号一致，不下载 --- \(file.type.desc)")
             completion()
             return
         }
@@ -111,7 +108,7 @@ extension YTJS_Config {
                 self.unzip(with: file, filePath: dloadDestinationPath) { isSuccess in
                     if isSuccess {
                         file.type.version = new_v
-                        print("YTJS: 配置更新成功: ", file.type.jsName, file.type.version)
+                        YTJS_Print("js更新成功: \(file.type.jsName), \(file.type.version)")
                     }
                     completion()
                 }

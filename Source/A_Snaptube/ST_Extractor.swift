@@ -44,8 +44,6 @@ class ST_Extractor_Model: NSObject {
         self.uid = uid
         self.event = event
         self.completionBlock = completionBlock
-        let queue = DispatchQueue(label: "ST_Extractor-\(event.rawValue)-\(uid)")
-        timer = DispatchSource.makeTimerSource(queue: queue)
     }
 
     func startTimer(timeoutBlock: @escaping () -> Void) {
@@ -54,6 +52,8 @@ class ST_Extractor_Model: NSObject {
             // 超时处理
             self.endBackgroundTask()
         }
+        let queue = DispatchQueue(label: "ST_Extractor-\(event.rawValue)-\(uid)")
+        timer = DispatchSource.makeTimerSource(queue: queue)
         timer?.schedule(deadline: .now() + 40, repeating: .never)
         timer?.setEventHandler(handler: { [weak self] in
             DispatchQueue.main.async {
@@ -65,8 +65,10 @@ class ST_Extractor_Model: NSObject {
     }
 
     private func cancelTimer() {
-        timer?.cancel()
-        timer = nil
+        if let timer = timer {
+            timer.cancel()
+            self.timer = nil
+        }
         endBackgroundTask()
     }
 
