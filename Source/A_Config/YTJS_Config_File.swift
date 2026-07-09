@@ -38,8 +38,8 @@ public enum YTJS_Config_File_Type: Int {
         return String(describing: self)
     }
     
-    var jsPath: String {
-        return root + jsName
+    var jsURL: URL {
+        return root.appendingPathComponent(jsName)
     }
     
     var jsName: String {
@@ -49,10 +49,10 @@ public enum YTJS_Config_File_Type: Int {
         }
     }
     
-    var root: String {
+    var root: URL {
         switch self {
         case .snaptube_ytb:
-            return YTJS_Path.snaptube_root
+            return YTJS_Path.jsFolder
         }
     }
     

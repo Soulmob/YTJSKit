@@ -31,8 +31,8 @@ public class YTJS_Config: NSObject {
                 guard let file = file else {
                     return
                 }
-                let jsPath = file.type.jsPath
-                let jsPath_bundle = bundle().path(forResource: file.type.jsName, ofType: nil)!
+                let jsURL = file.type.jsURL
+                let jsURL_bundle = bundle().url(forResource: file.type.jsName, withExtension: nil)!
                 //版本号不存在
                 if file.type.version == nil {
                     copy()
@@ -47,10 +47,10 @@ public class YTJS_Config: NSObject {
                 
                 func copy() {
                     do {
-                        if FileManager.default.fileExists(atPath: jsPath) {
-                            try FileManager.default.removeItem(atPath: jsPath)
+                        if FileManager.default.fileExists(atPath: jsURL.path()) {
+                            try FileManager.default.removeItem(at: jsURL)
                         }
-                        try FileManager.default.copyItem(atPath: jsPath_bundle, toPath: jsPath)
+                        try FileManager.default.copyItem(at: jsURL_bundle, to: jsURL)
                         file.type.version = file.v
                         YTJS_Print("版本号替换成功: \(file.type.desc) \(file.v)")
                     } catch { }
@@ -60,16 +60,21 @@ public class YTJS_Config: NSObject {
         evaluateScript()
     }
     
-    private func evaluateScript() {
-        let queue = DispatchQueue(label: "ytjs_evaluateScript")
-        queue.async {
-            let type = YTJS_Config_File_Type.snaptube_ytb
-            YTJSKit.updateJS(with: type)
+    private func evaluateScript(completion: (()->Void)?=nil) {
+        var fileURLs: [URL] = []
+        let type = YTJS_Config_File_Type.snaptube_ytb
+        
+        let fileName = type.jsName
+        let _url = YTJS_Path.jsFolder.appendingPathComponent(fileName)
+        fileURLs.append(_url)
+        
+        ST_Extractor.shared.updateJS(with: fileURLs) {
             YTJS_Print("\(type.desc) - \(type.version)")
+            completion?()
         }
     }
     
-    public func updateJS(remote json: JSON) {
+    public func updateJS(remote json: JSON, completion: (()->Void)? = nil) {
         let remoteConfig = YTJS_Config_Model(json: json)
         config = remoteConfig
         
@@ -84,7 +89,7 @@ public class YTJS_Config: NSObject {
             }
         }
         group.notify(queue: DispatchQueue.global()) {
-            self.evaluateScript()
+            self.evaluateScript(completion: completion)
         }
     }
 }
@@ -99,13 +104,13 @@ extension YTJS_Config {
             return
         }
         var dloadUrl = file.u
-        let dloadDestinationPath = file.type.root + (dloadUrl as NSString).lastPathComponent
+        let dloadDestination = file.type.root.appendingPathComponent((dloadUrl as NSString).lastPathComponent)
         let destination: DownloadRequest.Destination = { _, _ in
-            (URL(fileURLWithPath: dloadDestinationPath), [.removePreviousFile, .createIntermediateDirectories])
+            (dloadDestination, [.removePreviousFile, .createIntermediateDirectories])
         }
         AF.download(dloadUrl, to: destination).response(queue: .global()) { response in
             if case .success = response.result {
-                self.unzip(with: file, filePath: dloadDestinationPath) { isSuccess in
+                self.unzip(with: file, fileURL: dloadDestination) { isSuccess in
                     if isSuccess {
                         file.type.version = new_v
                         YTJS_Print("js更新成功: \(file.type.jsName), \(file.type.version)")
@@ -118,16 +123,16 @@ extension YTJS_Config {
         }
     }
     
-    private func unzip(with file: YTJS_Config_File, filePath: String, completion: @escaping (_ isSuccess: Bool) -> Void) {
-        if isZipFile(atPath: filePath) {
-            SSZipArchive.unzipFile(atPath: filePath, toDestination: file.type.root, progressHandler: nil) { _, success, _ in
-                try? FileManager.default.removeItem(atPath: filePath)
+    private func unzip(with file: YTJS_Config_File, fileURL: URL, completion: @escaping (_ isSuccess: Bool) -> Void) {
+        if isZipFile(at: fileURL) {
+            SSZipArchive.unzipFile(atPath: fileURL.path(), toDestination: file.type.root.path(), progressHandler: nil) { _, success, _ in
+                try? FileManager.default.removeItem(at: fileURL)
                 completion(success)
             }
         } else {
             do {
-                try FileManager.default.removeItem(atPath: file.type.jsPath)
-                try FileManager.default.moveItem(atPath: filePath, toPath: file.type.jsPath)
+                try FileManager.default.removeItem(at: file.type.jsURL)
+                try FileManager.default.moveItem(at: fileURL, to: file.type.jsURL)
                 completion(true)
             } catch {
                 completion(false)
@@ -135,15 +140,15 @@ extension YTJS_Config {
         }
     }
     
-    private func isZipFile(atPath path: String) -> Bool {
-        let pathExtension = (path as NSString).pathExtension.lowercased()
+    private func isZipFile(at fileURL: URL) -> Bool {
+        let pathExtension = fileURL.pathExtension.lowercased()
         if pathExtension == "js" {
             return false
         }
         if pathExtension == "zip" {
             return true
         }
-        guard let fileData = try? Data(contentsOf: URL(fileURLWithPath: path)) else {
+        guard let fileData = try? Data(contentsOf: fileURL) else {
             return false
         }
         let zipSignature: [UInt8] = [0x50, 0x4b, 0x03, 0x04] // PK zip 文件头

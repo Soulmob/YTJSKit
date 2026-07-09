@@ -9,12 +9,14 @@ import UIKit
 
 class YTJS_Path: NSObject {
     
-    static let root = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true).last! + "/ytjs/"
-    static let snaptube_root = root + "snaptube/"
+    static private let Documents = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
     
+    static let root = Documents.appendingPathComponent("ytjs")
+    static let jsFolder = root.appendingPathComponent("snaptube")
+        
     static func initial(completion: @escaping ()->Void) {
         DispatchQueue.global().async {
-            try? FileManager.default.createDirectory(atPath: snaptube_root, withIntermediateDirectories: true)
+            try? FileManager.default.createDirectory(at: Self.jsFolder, withIntermediateDirectories: true)
             completion()
         }
     }

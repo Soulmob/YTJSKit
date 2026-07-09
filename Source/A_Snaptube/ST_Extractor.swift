@@ -101,21 +101,38 @@ class ST_Extractor: NSObject, @unchecked Sendable {
 
     override init() {
         super.init()
-        context = JSContext()
+        createContext()
+    }
+
+    private func createContext() {
+        context = nil
+        
+        let nexContext = JSContext()
         if #available(iOS 16.4, *) {
-            context?.isInspectable = true
+            nexContext?.isInspectable = true
         }
         let key_vsplayer: NSString = "vsplayer"
-        context?.setObject(vsplayer, forKeyedSubscript: key_vsplayer)
+        nexContext?.setObject(vsplayer, forKeyedSubscript: key_vsplayer)
+        context = nexContext
     }
-
-    func updateJS(with path: String) {
-        let url = URL(fileURLWithPath: path)
-        if let jqueryString = try? NSString(contentsOf: url, encoding: String.Encoding.utf8.rawValue) {
-            let jsValue = context?.evaluateScript(jqueryString as String)
+    
+    func updateJS(with fileURLs: [URL], completion: @escaping ()->Void) {
+        
+        createContext()
+        
+        let queue = DispatchQueue(label: "ytjs_st_extractor", qos: .userInitiated)
+        queue.async {
+            for url in fileURLs {
+                if let jqueryString = try? NSString(contentsOf: url, encoding: String.Encoding.utf8.rawValue) {
+                    let jsValue = self.context?.evaluateScript(jqueryString as String)
+                }
+            }
+            DispatchQueue.main.async {
+                completion()
+            }
         }
     }
-
+    
     func queryVideo(with videoUrl: String, event: JSBridgeEventName, completionBlock: @escaping YTJS_ValueBlock<JSON>) {
         requestId += 1
         let model = ST_Extractor_Model(uid: requestId, event: event, completionBlock: completionBlock)
@@ -134,28 +151,6 @@ class ST_Extractor: NSObject, @unchecked Sendable {
         model.startTimer { [weak self] in
             self?.result(uid: model.uid, event: model.event.rawValue, dataJson: JSON(""))
         }
-    }
-
-    func search(key keyword: String,
-                next: String,
-                filter: Int,
-                completionBlock: @escaping YTJS_ValueBlock<JSON>)
-    {
-        requestId += 1
-        let model = ST_Extractor_Model(uid: requestId, event: .Search, completionBlock: completionBlock)
-        extractorModels.append(model)
-
-        let dict: [String: Any] = ["data": ["keyword": keyword,
-                                            "next": next,
-                                            "filter": filter],
-                                   "uid": model.uid,
-                                   "event": model.event.rawValue,
-                                   "source": JSBridgeEventSource.YTB.rawValue]
-        let jsonData = try! JSONSerialization.data(withJSONObject: dict, options: .withoutEscapingSlashes)
-        let jsonStr = String(data: jsonData, encoding: .utf8)!
-
-        let str = String(format: "extractor.postMessageToJSBridge('%@')", jsonStr)
-        context?.evaluateScript(str)
     }
 }
 

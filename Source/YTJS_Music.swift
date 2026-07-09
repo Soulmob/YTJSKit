@@ -18,7 +18,7 @@ public class YTJS_Music: NSObject {
 }
 
 extension YTJS_Music {
-    convenience init?(st_videoInfo json: JSON, videoURL: String) {
+    convenience init?(videoInfo json: JSON, videoURL: String) {
         guard let videoId = json["id"].string else {
             return nil
         }
@@ -26,25 +26,6 @@ extension YTJS_Music {
         self.id = videoId
         self.title = json["title"].stringValue
         self.subtitle = json["uploader"].stringValue
-        
-        let duration = Float(json["duration"].stringValue) ?? 0
-        self.duration = YTJS_Duration.format(duration)
-        
-        let thumbnails = json["thumbnails"].arrayValue
-        if let thumbnail = YTJS_ThumbnailTool.getClosest(with: thumbnails) {
-            self.img_url = thumbnail["url"].stringValue
-        }
-        self.url_web = videoURL
-    }
-    
-    convenience init?(ol_videoInfo json: JSON, videoURL: String) {
-        guard let videoId = json["id"].string else {
-            return nil
-        }
-        self.init()
-        self.id = videoId
-        self.title = json["title"].stringValue
-        self.subtitle = json["author"].stringValue
         
         let duration = Float(json["duration"].stringValue) ?? 0
         self.duration = YTJS_Duration.format(duration)

@@ -1,6 +1,6 @@
 source 'https://github.com/CocoaPods/Specs.git'
 
-platform :ios,  '15.5'
+platform :ios,  '16'
 use_frameworks!
 inhibit_all_warnings!
 
@@ -13,7 +13,18 @@ end
 post_install do |installer|
     installer.pods_project.targets.each do |target|
         target.build_configurations.each do |config|
-            config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '15.5'
+            config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '16'
         end
     end
+    
+    # 修复新版 Xcode SDK 中 netinet6/in6.h 私有头文件问题
+    Dir.glob('Pods/**/*.{m,mm}').each do |file|
+       content = File.read(file)
+       if content.include?("#import <netinet6/in6.h>")
+         content.gsub!("#import <netinet6/in6.h>\n", '')
+         File.chmod(0644, file)
+         File.write(file, content)
+         puts "✅ 已修复 #{file} 的 netinet6/in6.h 问题"
+       end
+     end
 end

@@ -51,7 +51,7 @@ public class YTJS_VideoInfo_Result: NSObject {
 class YTJS_VideoInfo: NSObject {
     static func getVideoInfo(with videoURL: String, completion: @escaping YTJS_ValueBlock<YTJS_VideoInfo_Result?>) {
         ST_Extractor.shared.queryVideo(with: videoURL, event: .Extract) { json in
-            if let result = st_parseJson(with: json, videoURL: videoURL) {
+            if let result = parseJson(with: json, videoURL: videoURL) {
                 completion(result)
             } else {
                 completion(nil)
@@ -60,38 +60,10 @@ class YTJS_VideoInfo: NSObject {
     }
 }
 
-// MARK: - Offline解析
+// MARK: - JSON解析
 
 extension YTJS_VideoInfo {
-    private static func ol_parseJson(with json: JSON, videoURL: String) -> YTJS_VideoInfo_Result? {
-        let song = json["data"]["song"]
-        let formatsJson = song["formats"].arrayValue
-
-        // 格式
-        var format_available: YTJS_URLFormat?
-        let _formats = formatsJson.compactMap { YTJS_URLFormat(json: $0) }
-        if let format_720 = _formats.first(where: { $0.itag == YTJS_URLFormatType.mp4_720.rawValue }) {
-            format_available = format_720
-        } else if let format_360 = _formats.first(where: { $0.itag == YTJS_URLFormatType.mp4_360.rawValue }) {
-            format_available = format_360
-        }
-
-        if let format = format_available,
-           let url = URL(string: format.url),
-           let nowPlay = YTJS_Music(ol_videoInfo: song, videoURL: videoURL)
-        {
-            let result = YTJS_VideoInfo_Result(playURL: url, music: nowPlay, format: format)
-            return result
-        } else {
-            return nil
-        }
-    }
-}
-
-// MARK: - SnapTube解析
-
-extension YTJS_VideoInfo {
-    private static func st_parseJson(with json: JSON, videoURL: String) -> YTJS_VideoInfo_Result? {
+    private static func parseJson(with json: JSON, videoURL: String) -> YTJS_VideoInfo_Result? {
         let music = json["data"]["music"]
         let formatsJson = music["formats"].arrayValue
         // 格式
@@ -105,7 +77,7 @@ extension YTJS_VideoInfo {
 
         if let format = format_available,
            let url = URL(string: format.url),
-           let nowPlay = YTJS_Music(st_videoInfo: music, videoURL: videoURL)
+           let nowPlay = YTJS_Music(videoInfo: music, videoURL: videoURL)
         {
             let result = YTJS_VideoInfo_Result(playURL: url, music: nowPlay, format: format)
             return result

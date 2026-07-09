@@ -10,26 +10,24 @@ import SwiftyJSON
 
 class YTJS_ThumbnailTool: NSObject {
     static func getClosest(with thumbnails: [JSON]) -> JSON? {
-        // 目标数值
-        let targetValue = UIScreen.main.bounds.size.width * 0.5
-        var closestNumberIndex = -1 // 存放最接近的索引位置
-        var minDifference = CGFLOAT_MAX // 初始化为无限大
-         
-        for (index, thumbnail) in thumbnails.enumerated() {
-            let number = CGFloat(thumbnail["width"].floatValue)
-            let difference = abs(number - targetValue)
-            if difference < minDifference {
-                minDifference = difference
-                closestNumberIndex = index
-            } else if difference == minDifference && number > targetValue {
-                break // 如果有多个相同的最小差值，则选择更大的那个
-            }
+        guard !thumbnails.isEmpty else {
+            return nil
         }
-         
-        if closestNumberIndex != -1 {
-            return thumbnails[closestNumberIndex]
-        } else {
-            return thumbnails.last
+
+        let targetWidth = UIScreen.main.bounds.width
+
+        let sorted = thumbnails.sorted {
+            $0["width"].floatValue < $1["width"].floatValue
         }
+
+        // 找到第一张 >= 屏幕宽度
+        if let thumbnail = sorted.first(where: {
+            CGFloat($0["width"].floatValue) >= targetWidth
+        }) {
+            return thumbnail
+        }
+
+        // 全部都比屏幕小，返回最大的
+        return sorted.last
     }
 }

@@ -16,7 +16,8 @@ class ViewController: UIViewController {
 //    private let url = "https://www.youtube.com/watch?v=edcRi66e_NA"
 //    private let url = "https://music.youtube.com/watch?v=8ZP5eqm4JqM"
 //    private let url = "https://www.youtube.com/watch?v=3NNhrqHZqlI"//bu
-    private let url = "https://music.youtube.com/watch?v=XqoanTj5pNY"
+//    private let url = "https://music.youtube.com/watch?v=XqoanTj5pNY"
+    private let url = "https://m.youtube.com/watch?v=S_hpD7teoow"
     
     override func viewDidLoad() {
         super.viewDidLoad()

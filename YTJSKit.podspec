@@ -1,14 +1,14 @@
 Pod::Spec.new do |s|
 
 s.name                = "YTJSKit"
-s.version             = "0.1.2"
+s.version             = "0.1.3"
 s.summary             = "YouTube JS"
 s.homepage            = "https://github.com/Soulmob/YTJSKit"
 s.author              = { "mengqingzheng" => "mengqingzheng@munimob.com" }
 s.license             = "MIT"
 s.license             = { :type => "MIT", :file => "LICENSE" }
 s.requires_arc        = true
-s.platform            = :ios, "15.5"
+s.platform            = :ios, "16"
 
 s.source              = { :git => "git@github.com:Soulmob/YTJSKit.git", :tag => "#{s.version}" }
 
